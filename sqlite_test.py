@@ -194,37 +194,20 @@ if __name__ == "__main__":
         dml_filename = os.path.abspath(dml)
         print(schema_filename)
         conn = sqlite3.connect("./test1.db")
-        tabella = "categoria"
-        colonna = "id"
-        
-        categoria = ""
 
-        id_tessera = ""
-        data_registrazione = ""
-        nome = ""
-        congome = ""
-        data = ""
-        tel = ""
-        indirizzo = ""
-        email = ""
-
-        isbn = ""
-        titolo = ""
-        lingua = ""
-        editore = ""
-        anno = ""
-        copie = ""
 
         if num == "0":
             print("esci dal ciclo")
             break
 
         if num == "1":
+            tabella = ""
+            colonna = ""
             estrazione(conn, tabella, colonna)
             pass
 
         if num == "2":
-            
+            categoria = ""
             add_categoria(categoria)
             pass
 
@@ -234,18 +217,47 @@ if __name__ == "__main__":
 
         if num == "4":
 
+            id_tessera = ""
+            data_registrazione = ""
+            nome = ""
+            cognome = ""
+            data = ""
+            tel = ""
+            indirizzo = ""
+            email = ""
+
             add_utente(id_tessera, data_registrazione, nome, cognome, data, tel, indirizzo, email)
             pass
 
         if num == "5":
+            id_tessera = ""
+            data_registrazione = ""
+            nome = ""
+            cognome = ""
+            data = ""
+            tel = ""
+            indirizzo = ""
+            email = ""
             delete_utente(id_tessera, data_registrazione, nome, cognome, data, tel, indirizzo, email)
             pass
 
         if num == "6":
+            isbn = ""
+            titolo = ""
+            lingua = ""
+            editore = ""
+            anno = ""
+            copie = ""
             add_libro(isbn, titolo, lingua, editore, anno, copie)
             pass
 
         if num == "7":
+            isbn = ""
+            titolo = ""
+            lingua = ""
+            editore = ""
+            anno = ""
+            copie = ""
             delete_libro(isbn, titolo, lingua, editore, anno, copie)
             pass
 
