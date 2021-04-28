@@ -70,7 +70,7 @@ def add_categoria(categoria): #implementare controllo degli errori: CONTROLLO DE
     conn.commit()
     return  codice
 
-def delete_categoria(): #IMPLEMENTARE LA CANCELLAZIONE A CASCATA e CANCELAZIONE IN BRIDGE_CATEGORIA
+def delete_categoria(categoria): #IMPLEMENTARE LA CANCELLAZIONE A CASCATA e CANCELAZIONE IN BRIDGE_CATEGORIA
     print('cancella una delle seguenti categorie:\n')
     print(estrazione(conn, 'categoria', 'nome'))
     canc = input('...') #CONTROLLARE CHE L'INPUT SIA GIUSTO SE NO NON CANCELLA NULLA
@@ -80,7 +80,7 @@ def delete_categoria(): #IMPLEMENTARE LA CANCELLAZIONE A CASCATA e CANCELAZIONE 
     conn.commit()
     return id_canc #[(11,)] cancellare in brifge_categoria
 
-def add_utente(): #IMPLEMENTARE LA GESTIONE ERRORI
+def add_utente(id_tessera, data_registrazione, nome, cognome, data, tel, indirizzo, email): #IMPLEMENTARE LA GESTIONE ERRORI
     print('inserisci un nuovo utente')
     nome = input('nome: ')
     cognome = input('cognome: ')
@@ -98,7 +98,7 @@ def add_utente(): #IMPLEMENTARE LA GESTIONE ERRORI
     conn.commit()
     return 
 
-def delete_utente():
+def delete_utente(id_tessera, data_registrazione, nome, cognome, data, tel, indirizzo, email):
     print('cancella uno dei seguenti utenti, inserisci ID associato:\n')
     print(estrazione(conn, 'utente', 'id_tessera'))
     canc = input('...') #CONTROLLARE CHE L'INPUT SIA GIUSTO SE NO NON CANCELLA NULLA
@@ -107,7 +107,7 @@ def delete_utente():
     conn.commit()
     return 
 
-def add_libro(): #CONTROLLO DEL isbn SE CI SONO gia
+def add_libro(isbn, titolo, lingua, editore, anno, copie): #CONTROLLO DEL isbn SE CI SONO gia
     print('inserisci un nuovo libro:')
     isbn = int(input('isbn:'))
     titolo = input('titolo:')
@@ -144,7 +144,7 @@ def add_libro(): #CONTROLLO DEL isbn SE CI SONO gia
     return
    # categoria = input('categoria') # IMPLEMENTARE CATEGORIE MULTIPLE
    
-def delete_libro():
+def delete_libro(isbn, titolo, lingua, editore, anno, copie):
     print('cancella uno dei seguenti libri, inserisci ID associato:\n')
     print(estrazione(conn, 'libro', 'titolo'))
     print(estrazione(conn, 'libro', 'isbn'))
@@ -166,31 +166,18 @@ def delete_libro():
 
 #cancellare la categoria solo se non ha associato un libro 
 #ricerca prestiti cliente e visualizzazione cliente 
-    
-print("Inserisci il numero corrispondente la funzione che vuoi svolgere: {}" .format(__name__))
-'''
-def estrazione(conn, tabella, colonna):
-   print("è in esecuzione la funzione 1")
 
-def add_categoria(categoria):
-   print("è in esecuzione la funzione 2")  
-
-def delete_categoria(categora):
-   print("è in esecuzione la funzione 3")
-
-def add_utente():
-   print("è in esecuzione la funzione 4")
-   
-def delete_utente():
-   print("è in esecuzione la funzione 5")
-   
-def add_libro():
-   print("è in esecuzione la funzione 6")
-
-def delete_libro():
-   print("è in esecuzione la funzione 7")
-'''
+#-------------------------------
+# ------------ MAIN ------------
 if __name__ == "__main__":
+    
+    print("---inserisci 1 per estrarre un libro---")
+    print("---inserisci 2 per aggiungere una categoria---")
+    print("---inserisci 3 per cancella re una categoria---")
+    print("---inserisci 4 per aggiungere un utente---")
+    print("---inserisci 5 per cancellare un utente---")
+    print("---inserisci 6 per aggiungere un libro---")
+    print("---inserisci 7 per cancellare un libro---")
     num = input("metti un numero:\n")
     schema= 'biblioteca.sql'
     dml = 'dml_biblioteca.sql'
@@ -200,34 +187,53 @@ if __name__ == "__main__":
     conn = sqlite3.connect("./test1.db")
     tabella = "categoria"
     colonna = "id"
+    
+    categoria = ""
+
+    id_tessera = ""
+    data_registrazione = ""
+    nome = ""
+    congome = ""
+    data = ""
+    tel = ""
+    indirizzo = ""
+    email = ""
+
+    isbn = ""
+    titolo = ""
+    lingua = ""
+    editore = ""
+    anno = ""
+    copie = ""
     if num == "1":
         estrazione(conn, tabella, colonna)
         pass
 
     if num == "2":
-        categoria = "drama"
+        
         add_categoria(categoria)
         pass
 
     if num == "3":
-        delete_categoria()
+        delete_categoria(categoria)
         pass
 
     if num == "4":
-        add_utente()
+
+        add_utente(id_tessera, data_registrazione, nome, cognome, data, tel, indirizzo, email)
         pass
 
     if num == "5":
-        delete_utente()
+        delete_utente(id_tessera, data_registrazione, nome, cognome, data, tel, indirizzo, email)
         pass
 
     if num == "6":
-        add_libro()
+        add_libro(isbn, titolo, lingua, editore, anno, copie)
         pass
 
     if num == "7":
-        delete_libro()
+        delete_libro(isbn, titolo, lingua, editore, anno, copie)
         pass
 
 else:
-   print("******* IL COMANDO INSERITO NON E' VALIDO*******") 
+   print("******* IL NUMERO INSERITO NON E' VALIDO*******") 
