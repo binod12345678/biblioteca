@@ -169,71 +169,88 @@ def delete_libro(isbn, titolo, lingua, editore, anno, copie):
 
 #-------------------------------
 # ------------ MAIN ------------
+
+
+    
 if __name__ == "__main__":
     
-    print("---inserisci 1 per estrarre un libro---")
-    print("---inserisci 2 per aggiungere una categoria---")
-    print("---inserisci 3 per cancella re una categoria---")
-    print("---inserisci 4 per aggiungere un utente---")
-    print("---inserisci 5 per cancellare un utente---")
-    print("---inserisci 6 per aggiungere un libro---")
-    print("---inserisci 7 per cancellare un libro---")
-    num = input("metti un numero:\n")
-    schema= 'biblioteca.sql'
-    dml = 'dml_biblioteca.sql'
-    schema_filename = os.path.abspath(schema)
-    dml_filename = os.path.abspath(dml)
-    print(schema_filename)
-    conn = sqlite3.connect("./test1.db")
-    tabella = "categoria"
-    colonna = "id"
-    
-    categoria = ""
+    n = 0
+    while n < 8: 
 
-    id_tessera = ""
-    data_registrazione = ""
-    nome = ""
-    congome = ""
-    data = ""
-    tel = ""
-    indirizzo = ""
-    email = ""
+        print("---inserisci 1 per estrarre un libro---")
+        print("---inserisci 2 per aggiungere una categoria---")
+        print("---inserisci 3 per cancella re una categoria---")
+        print("---inserisci 4 per aggiungere un utente---")
+        print("---inserisci 5 per cancellare un utente---")
+        print("---inserisci 6 per aggiungere un libro---")
+        print("---inserisci 7 per cancellare un libro---")
+        print("---inserisci 0 per uscire dall'aplicazione---")
 
-    isbn = ""
-    titolo = ""
-    lingua = ""
-    editore = ""
-    anno = ""
-    copie = ""
-    if num == "1":
-        estrazione(conn, tabella, colonna)
-        pass
 
-    if num == "2":
+        num = input("metti un numero:\n")
+        schema= 'biblioteca.sql'
+        dml = 'dml_biblioteca.sql'
+        schema_filename = os.path.abspath(schema)
+        dml_filename = os.path.abspath(dml)
+        print(schema_filename)
+        conn = sqlite3.connect("./test1.db")
+        tabella = "categoria"
+        colonna = "id"
         
-        add_categoria(categoria)
-        pass
+        categoria = ""
 
-    if num == "3":
-        delete_categoria(categoria)
-        pass
+        id_tessera = ""
+        data_registrazione = ""
+        nome = ""
+        congome = ""
+        data = ""
+        tel = ""
+        indirizzo = ""
+        email = ""
 
-    if num == "4":
+        isbn = ""
+        titolo = ""
+        lingua = ""
+        editore = ""
+        anno = ""
+        copie = ""
 
-        add_utente(id_tessera, data_registrazione, nome, cognome, data, tel, indirizzo, email)
-        pass
+        if num == "0":
+            print("esci dal ciclo")
+            break
 
-    if num == "5":
-        delete_utente(id_tessera, data_registrazione, nome, cognome, data, tel, indirizzo, email)
-        pass
+        if num == "1":
+            estrazione(conn, tabella, colonna)
+            pass
 
-    if num == "6":
-        add_libro(isbn, titolo, lingua, editore, anno, copie)
-        pass
+        if num == "2":
+            
+            add_categoria(categoria)
+            pass
 
-    if num == "7":
-        delete_libro(isbn, titolo, lingua, editore, anno, copie)
-        pass
+        if num == "3":
+            delete_categoria(categoria)
+            pass
 
-else:
-   print("******* IL NUMERO INSERITO NON E' VALIDO*******") 
+        if num == "4":
+
+            add_utente(id_tessera, data_registrazione, nome, cognome, data, tel, indirizzo, email)
+            pass
+
+        if num == "5":
+            delete_utente(id_tessera, data_registrazione, nome, cognome, data, tel, indirizzo, email)
+            pass
+
+        if num == "6":
+            add_libro(isbn, titolo, lingua, editore, anno, copie)
+            pass
+
+        if num == "7":
+            delete_libro(isbn, titolo, lingua, editore, anno, copie)
+            pass
+
+        else:
+            print("******* IL NUMERO INSERITO NON E' VALIDO *******")
+            print("------- INSERISCI DI NUVO UN NUMERO VALIDO -------") 
+
+    
