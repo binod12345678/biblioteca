@@ -158,16 +158,15 @@ def delete_libro(isbn, titolo, lingua, editore, anno, copie):
    
 
 def ricerca_libro ():
-    
-    ricerca = input('che libro vuoi cercare:l\' isbn :\n')
-    
-    x = esegui(conn, ''' SELECT *
-            FROM libro join bridge_categoria ON libro.isbn = bridge_categoria.isbn_libro join categoria ON categoria.id = bridge_categoria.id_categoria 
-            WHERE libro.isbn = ?''', ricerca)
-            
-    
-    return(x)
 
+    ricerca=input('seleziona isbn')
+    concat = '''SELECT libro.isbn, libro.titolo, libro.anno, libro.copie, libro.editore, libro.lingua,group_concat(categoria.nome)
+                FROM libro
+                join bridge_categoria ON libro.isbn = bridge_categoria.isbn_libro
+                join categoria ON categoria.id = bridge_categoria.id_categoria
+                WHERE libro.isbn = :filtro
+                group by libro.isbn '''
+    print(esegui(conn, concat, {'filtro': ricerca}))
 
 
 '''ERA IN DELETE_CATEGORIA() DOPO LA PRINT
@@ -216,12 +215,12 @@ if __name__ == "__main__":
             break
 
         if num == "8":
-            x = ricerca_libro()
-            print(x)
+
+            ricerca = ricerca_libro()
+            
             
 
-            
-
+        
         if num == "1":
             tabella = ""
             colonna = ""
