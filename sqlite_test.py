@@ -56,6 +56,8 @@ def estrazione(conn, tabella, colonna):
     for estrai in tupla:         
         zz.append(estrai[0])
     return zz 
+
+    
     
 
 
@@ -80,7 +82,7 @@ def delete_categoria(categoria): #IMPLEMENTARE LA CANCELLAZIONE A CASCATA e CANC
     conn.commit()
     return id_canc #[(11,)] cancellare in brifge_categoria
 
-def add_utente(id_tessera, data_registrazione, nome, cognome, data, tel, indirizzo, email): #IMPLEMENTARE LA GESTIONE ERRORI
+def add_utente(id_tessera, data_registrazione, nome, cognome, data, tel, indirizzo, email, codice, u, estrai): #IMPLEMENTARE LA GESTIONE ERRORI
     print('inserisci un nuovo utente')
     nome = input('nome: ')
     cognome = input('cognome: ')
@@ -154,8 +156,19 @@ def delete_libro(isbn, titolo, lingua, editore, anno, copie):
     conn.commit()
     return  #IMPLEMENTARE LA CANCELLLAZIONE A CASCATA IN BRIDGE_CATEGORIA
    
-   
-    
+
+def ricerca_libro ():
+
+    ricerca=input('seleziona isbn')
+    concat = '''SELECT libro.isbn, libro.titolo, libro.anno, libro.copie, libro.editore, libro.lingua,group_concat(categoria.nome)
+                FROM libro
+                join bridge_categoria ON libro.isbn = bridge_categoria.isbn_libro
+                join categoria ON categoria.id = bridge_categoria.id_categoria
+                WHERE libro.isbn = :filtro
+                group by libro.isbn '''
+    print(esegui(conn, concat, {'filtro': ricerca}))
+
+
 '''ERA IN DELETE_CATEGORIA() DOPO LA PRINT
     estrai = SELECT nome FROM categoria;
     y = esegui(conn, estrai) # tupla contenente le categorie
@@ -175,7 +188,7 @@ def delete_libro(isbn, titolo, lingua, editore, anno, copie):
 if __name__ == "__main__":
     
     n = 0
-    while n < 8: 
+    while n < 9: 
 
         print("---inserisci 1 per estrarre un libro---")
         print("---inserisci 2 per aggiungere una categoria---")
@@ -184,6 +197,7 @@ if __name__ == "__main__":
         print("---inserisci 5 per cancellare un utente---")
         print("---inserisci 6 per aggiungere un libro---")
         print("---inserisci 7 per cancellare un libro---")
+        print("---8 ricera un lbro---")
         print("---inserisci 0 per uscire dall'aplicazione---")
 
 
@@ -200,6 +214,13 @@ if __name__ == "__main__":
             print("esci dal ciclo")
             break
 
+        if num == "8":
+
+            ricerca = ricerca_libro()
+            
+            
+
+        
         if num == "1":
             tabella = ""
             colonna = ""
@@ -225,8 +246,11 @@ if __name__ == "__main__":
             tel = ""
             indirizzo = ""
             email = ""
+            u = ""
+            estrai = ""
+            codice = 0
 
-            add_utente(id_tessera, data_registrazione, nome, cognome, data, tel, indirizzo, email)
+            add_utente(id_tessera, data_registrazione, nome, cognome, data, tel, indirizzo, email, codice, u, estrai)
             pass
 
         if num == "5":

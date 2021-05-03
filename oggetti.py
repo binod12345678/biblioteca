@@ -47,4 +47,5 @@ class Libro:
         self.categoria = categoria
         self.copie = copie
         self.autore = autore
+        
      
