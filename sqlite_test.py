@@ -1,4 +1,4 @@
-
+import add_general as add
 import os
 import sqlite3
 
@@ -229,7 +229,7 @@ if __name__ == "__main__":
 
         if num == "2":
             categoria = ""
-            add_categoria(categoria)
+            add_categoria(categoria) 
             pass
 
         if num == "3":
