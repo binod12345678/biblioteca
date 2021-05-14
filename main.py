@@ -13,7 +13,7 @@ import sqlite3
 import os
 
  
-db_filename = 'bibliotecatest.db' # creo un secondo db solo per l'esempio poichè esiste giò chinook.sqlite
+db_filename = 'bibliotecatest01.db' # creo un secondo db solo per l'esempio poichè esiste giò chinook.sqlite
 
 schema= 'biblioteca.sql'
 dml = 'dml_biblioteca.sql'
@@ -65,6 +65,16 @@ if canc_libro in estrazione(conn, 'libro', 'isbn'):
 else:
     print('questo libro non è presente nel db, oppure hai inserito un isbn errato')
  '''  
+  #cancella autore
+'''
+canc_autore = input('inserisci l autore da cancellare')
+canc_autore = canc_autore.split()
+if tuple(canc_autore) in sql.esegui(conn, 'select nome, cognome from autore'):
+    print('cancella')
+else:
+    print('questo autore non è presente nel db')
+    '''
+ 
 #RICERCA 
 '''
 ricerca = int(input('inserisci l ISBN del libro che stai cercando'))
@@ -125,3 +135,14 @@ def create_libro():
 x = sql.estrazione(conn, 'libro','titolo')
 c = create_libro()
 sql.add_general(conn, c)
+
+#GESTIONE DEGLI ERRORI CATEGORIA
+'''
+while True:
+    try:
+        nuova_cat = input('inserisci nuova categoria')
+        sql.add_general(conn,nuova_cat)
+        break
+    except sqlite3.IntegrityError:
+        print('hai inserito una categoria già esistente')
+'''

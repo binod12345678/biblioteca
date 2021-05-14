@@ -4,8 +4,9 @@ Created on Fri May  7 17:27:42 2021
 
 @author: JalexFollosco
 """
-import add_general as a
+import add_general as a  #autore
 import oggetti as o
+import datetime
 
 def esegui(conn,query, params=()):
     """
@@ -19,7 +20,7 @@ ottenuti. In params, possiamo mettere una lista di parametri per la query.
 
 def estrazione(conn, tabella, colonna):
     '''
-    estrae dalla tabella tutti gli elementi di una determinata colonna
+    estrae da una tabella del db, tutti gli elementi di una determinata colonna
     esempio --> estrazione("libro", "titolo")
 
     Parameters
@@ -80,7 +81,8 @@ def add_general(conn,oggetto):
 
     Returns
     -------
-    None.
+    codice : int
+        restituisce la primary key generata.
 
     '''
     codice = id_generator(conn, oggetto)
@@ -134,7 +136,7 @@ def add_general(conn,oggetto):
     elif oggetto.__class__.__name__ == 'autore':
         esegui(conn, query_autore,(codice, oggetto.nome, oggetto.cognome, oggetto.data_nascita, oggetto.luogo_nascita, oggetto.note)) 
     conn.commit()
-    return
+    return codice
 
 def delete_general(conn,row, table):
     '''
@@ -148,6 +150,7 @@ def delete_general(conn,row, table):
         valore --> 0 per cancellare nella tabella categoria del db
         valore --> 1 per cancellare nella tabella utente del db 
         valore --> 2 per cancellare nella tabella libro del db
+        valore --> 3 per cancellare nella tabella autore del db
         
     Returns
     -------
@@ -190,12 +193,22 @@ def delete_general(conn,row, table):
             cascade_prestito = '''DELETE FROM prestito WHERE isbn_libro = :isbn '''
             esegui(conn, cascade_prestito, {"isbn" :row})
             
+    elif table == 3:
+        get_id = esegui(conn,'SELECT id FROM autore WHERE nome = :nome AND cognome = :cognome',{'nome':row[0], 'cognome':row[1]})
+        get_id= get_id[0][0]
+        if get_id not in estrazione(conn, 'bridge_autore', 'id_autore'):
+            cancella = '''DELETE FROM autore WHERE id = :id '''
+            esegui(conn, cancella, {"id" :get_id})
+            print('l autore seguente è stato cancellato')
+        else:
+            print('l autore seguente non può essere cancellato, perchè asoociata a uno o più libri')
+                
     conn.commit()
     return
 
 def ricerca_libro (conn,ricerca):
     '''
-    ricerca il libro all'interno del database e restituisce un oggetto libro
+    ricerca il libro (tramite isbn) all'interno del database e restituisce un oggetto libro
 
     Parameters
     ----------
@@ -222,3 +235,74 @@ def ricerca_libro (conn,ricerca):
     return libro 
 
 
+def ritardi(conn, utente):
+    '''
+    cerca nel db i libri presi in prestito dall'utente che non sono stati restituiti entro la data di
+    scadenza.
+
+    Parameters
+    ----------
+    conn : connessione
+    utente : int
+        numero di tessera dell'utente.
+
+    Returns
+    -------
+    ritardi_isbn : list
+        fornisce una lista degli isbn dei libri non consegnati entro la data 
+        di scadenza.
+
+    '''
+    check_ritardi= 'SELECT data_prestito FROM prestito WHERE data_restituzione is NULL AND tessera_id = :tessera'
+    data_prestiti = []
+    ritardi_isbn = []
+    for estrai in esegui(conn, check_ritardi, {'tessera' :utente}): 
+        data_prestiti.append(datetime.datetime.strptime(estrai[0], "%Y-%m-%d").date()) #estrae dal db la data e la aggiunge in una lista trasformandola da str a data
+    
+    for data in data_prestiti:
+        scadenza = data + datetime.timedelta(days = 30)
+        if scadenza <= datetime.date.today():
+            delays = esegui(conn, 'SELECT isbn_libro FROM prestito WHERE data_prestito = :date',{'date':data})
+            ritardi_isbn.append(delays[0][0])
+            
+    return ritardi_isbn
+
+def prestito(conn, libro, utente):
+    '''
+    inserisce nel db il libro e l'utente che lo ha preso in prestito,
+    calcola la data di prestito e di restituzione del libro (30 gg) e aggiorna il numero
+    di copie del libro presi in prestito.
+
+    Parameters
+    ----------
+    conn : connessione
+    libro : classe libro.
+    utente : int
+            numero tessera utente.
+
+    Returns
+    -------
+    None.
+
+    '''
+    check_prestito= 'SELECT tessera_id FROM prestito WHERE data_restituzione is NULL AND tessera_id = :tessera'
+    if len(esegui(conn, check_prestito, {'tessera':utente})) < 5:
+        n_ritardi = len(ritardi(conn,utente))
+       
+        if n_ritardi == 0:
+            now = datetime.date.today()
+            riconsegna = now + datetime.timedelta(days = 30)
+            query = '''INSERT INTO prestito(isbn_libro, tessera_id, data_prestito, data_restituzione)
+            values(?, ?, ?, NULL)'''
+            esegui(conn, query, (libro.ISBN, utente, now))
+            update_copie = '''UPDATE libro SET copie = :n_copie WHERE isbn = :filtro'''
+            esegui(conn, update_copie, {'n_copie': libro.copie-1, 'filtro': libro.ISBN})
+            print(f'l utente deve risconsegnare il libro entro il: {riconsegna}')
+        else:
+            print('l utente non può prendere in prestito i libri in quanto ha dei ritardi nella riconsegna')
+    
+    else:
+        print('l utente ha raggiunto il massimo di libri concesi in prestito')
+    
+    conn.commit()
+    return

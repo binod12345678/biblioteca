@@ -5,7 +5,7 @@ Created on Thu Apr 29 09:16:21 2021
 @author: JalexFollosco
 """
 import oggetti as o
-
+import datetime
 
 #CREAZIONE DB INIZIALE
 
@@ -166,6 +166,15 @@ if canc_libro in estrazione(conn, 'libro', 'isbn'):
 else:
     print('questo libro non è presente nel db, oppure hai inserito un isbn errato')
  '''  
+ #cancella autore
+'''
+canc_autore = input('inserisci l autore da cancellare')
+canc_autore = canc_autore.split()
+if tuple(canc_autore) in sql.esegui(conn, 'select nome, cognome from autore'):
+    print('cancella')
+else:
+    print('questo autore non è presente nel db')
+    '''
    
 #script per inserirlo dento l'oggetto libro..  
 def crea_autore():
@@ -252,4 +261,128 @@ else:
 #scadenza = now + datetime.timedelta(days = 30)
 # cc= '2000-05-26'
 #date_format= datetime.datetime.strptime(cc, "%Y-%m-%d").date()
+
+
+
         
+        
+#PRESTITO
+'''
+while True:
+    try:
+        libro = int(input('inserisci isbn libro'))
+        if libro in estrazione(conn, 'libro', 'isbn'):
+            break
+        else:
+            continue
+    except ValueError:
+        continue
+    
+while True:
+    try:
+        utente = int(input('inserisci il numero di tessera dell utente'))
+        if utente in estrazione(conn, 'utente', 'id_tessera'):
+            break
+        else:
+            continue
+    except ValueError:
+        continue
+import datetime   
+
+V2
+
+while True:
+    try:
+        libro_isbn = int(input('inserisci isbn libro'))
+        if libro_isbn in sql.estrazione(conn, 'libro', 'isbn'):
+            libro = sql.ricerca_libro(conn,libro_isbn)
+            if libro.copie > 0:
+                break
+            else:
+                print('questo libro non è disponibile al prestito, scegliere in altro libro')
+                continue
+        else:
+            print('questo isbn non è presente nel db o hai digitato male.')
+            continue
+    except ValueError:
+        print('hai inserito delle lettere')
+        continue
+
+
+
+
+'''
+
+
+
+
+
+#check_ritardi_pandas = pd.read_sql_query
+#('SELECT data_prestito FROM prestito WHERE data_restituzione is NULL AND 
+#tessera_id = :tessera',conn, params= {'tessera' :0})
+# check_ritardi_pandas.values.tolist()
+
+'''
+#visualizzazione di una lista di libri  
+lista_libri = [9788854171633, 9788831003445, 4165472289563]
+
+for i in lista_libri:
+    oggetti_libri.append(sql.ricerca_libro(conn, i))
+    
+oggetti_libri = []
+for x in oggetti_libri:
+    print(x.__dict__)
+    
+#Utilizzare pandas
+'''
+
+'''
+#UPDATE COPIE
+isbn = 12345678910123
+libro = ricerca_libro(conn,isbn)
+update_copie = 'UPDATE libro SET copie = :n_copie WHERE isbn = :filtro'
+esegui(conn, update_copie, {'n_copie': libro.copie, 'filtro': isbn})
+'''
+
+import datetime
+
+def restituzione(conn, libro, utente):
+    update_copie = '''UPDATE libro SET copie = :n_copie WHERE isbn = :filtro'''
+    esegui(conn, update_copie, {'n_copie': libro.copie+1, 'filtro': libro.ISBN})
+    riconsegna = datetime.date.today()
+    query = '''UPDATE prestito SET data_restituzione = :data 
+    WHERE isbn_libro = :filtro AND tessera_id = :filtro2 '''
+    esegui(conn, query, {'data': riconsegna, 'filtro': libro.ISBN, 'filtro2': utente})
+    conn.commit()
+    return
+
+
+while True:
+    
+    try:
+        libro_isbn = int(input('inserisci l isbn del libro da riconsegnare'))
+        if libro_isbn in sql.estrazione(conn, 'prestito', 'isbn_libro'):
+            libro = ricerca_libro(conn,libro_isbn)
+            break
+        else:
+            print('questo libro non risulta nei prestiti')
+            continue
+     except ValueError:
+        continue
+
+while True:
+    try:
+        utente = int(input('inserisci il numero di tessera dell utente'))
+        if utente in sql.estrazione(conn, 'utente', 'id_tessera'):
+            break
+        else:
+            print('numero di tessera inesistente')
+            continue
+    except ValueError:
+        continue
+    
+
+
+
+
+
