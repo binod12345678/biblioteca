@@ -4,9 +4,43 @@ Created on Fri May  7 17:27:42 2021
 
 @author: JalexFollosco
 """
-import add_general as a  #autore
+
+#import add_general as a  #autore
+import MenuAutore as a
 import oggetti as o
 import datetime
+import sqlite3
+import os
+
+def createDb():
+    db_filename = 'bibliotecaDB.db' # creo un secondo db solo per l'esempio poichè esiste giò chinook.sqlite
+
+    schema= 'biblioteca.sql'
+    dml = 'dml_biblioteca.sql'
+    schema_filename = os.path.abspath(schema)
+    dml_filename = os.path.abspath(dml)
+    
+    db_is_new = not os.path.exists(db_filename)
+    
+    with sqlite3.connect(db_filename) as conn:
+        if db_is_new:
+            print('Creazione dello schema')
+            with open(schema_filename, 'rt') as f:
+                schema = f.read()
+            conn.executescript(schema)
+            f.close()
+    
+            print('Popolamento del db in corso...')
+            with open(dml_filename, 'rt') as g:
+                schema_dml = g.read()
+            conn.executescript(schema_dml)
+            g.close()
+                    
+        else:
+            print('Il database esiste, si suppone che esista anche lo schema.')
+            
+    return conn
+
 
 def esegui(conn,query, params=()):
     """
@@ -165,16 +199,16 @@ def delete_general(conn,row, table):
         if id_categoria not in estrazione(conn, 'bridge_categoria', 'id_categoria'):
             cancella = '''DELETE FROM categoria WHERE nome = :category '''
             esegui(conn, cancella, {"category" :row})
-            print('la categoria seguente è stata cancellata')
+            print('la categoria è stata cancellata')
         else:
-            print('la categoria seguente non può essere cancellata, perchè asoociata a uno o più libri')
+            print('la categoria non può essere cancellata, perchè associata a uno o più libri')
             
     elif table == 1:
         check_prestito= 'SELECT tessera_id FROM prestito WHERE data_restituzione is NULL AND tessera_id = :tessera'
         if len(esegui(conn, check_prestito, {'tessera':row})) > 0:
-            print('L utente non può essere cancellata, perchè asoociata a uno o più libri in prestito')
+            print('L utente non può essere cancellato, perchè ha asoociato uno o più libri in prestito')
         else:
-            print('canccellato')
+            print('utente cancellato')
             cancella = '''DELETE FROM utente WHERE id_tessera = :userid '''
             esegui(conn, cancella, {"userid" :row}) 
             
@@ -199,9 +233,9 @@ def delete_general(conn,row, table):
         if get_id not in estrazione(conn, 'bridge_autore', 'id_autore'):
             cancella = '''DELETE FROM autore WHERE id = :id '''
             esegui(conn, cancella, {"id" :get_id})
-            print('l autore seguente è stato cancellato')
+            print('autore cancellato')
         else:
-            print('l autore seguente non può essere cancellato, perchè asoociata a uno o più libri')
+            print('l\'autore non può essere cancellato, perchè associato a uno o più libri')
                 
     conn.commit()
     return
@@ -306,3 +340,47 @@ def prestito(conn, libro, utente):
     
     conn.commit()
     return
+
+
+def update_libroDB(conn, libro, campo, valore):
+    '''
+    aggiorna un campo della tabella libro (lingua, editore, anno o copie) del db
+
+    Parameters
+    ----------
+    conn : connessione.
+    libro : int
+        isbn del libro.
+    campo : str
+        mettere il nome del campo da aggiornare (lingua, editore, anno o copie).
+    valore : int/ str
+        valore desiderato da aggiornare.
+
+    Returns
+    -------
+    None.
+
+    '''
+    query= f'UPDATE libro SET {campo} = :valore WHERE isbn = :filtro '
+    esegui(conn, query, {'valore': valore, 'filtro': libro})
+    conn.commit()
+    
+    return
+
+def restituzione(conn, libro, utente):
+    
+    update_copie = '''UPDATE libro SET copie = :n_copie WHERE isbn = :filtro'''
+    esegui(conn, update_copie, {'n_copie': libro.copie+1, 'filtro': libro.ISBN})
+    riconsegna = datetime.date.today()
+    query = '''UPDATE prestito SET data_restituzione = :data 
+    WHERE isbn_libro = :filtro AND tessera_id = :filtro2 '''
+    esegui(conn, query, {'data': riconsegna, 'filtro': libro.ISBN, 'filtro2': utente})
+    conn.commit()
+    
+    return
+
+def ricerca_prestito(conn, utente):
+    
+    query='SELECT tessera_id, isbn_libro FROM prestito WHERE data_restituzione is NULL AND tessera_id = :tessera'
+    x = esegui(conn, query, {'tessera':utente})
+    return x

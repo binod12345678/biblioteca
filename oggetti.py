@@ -35,6 +35,7 @@ class autore(persona): #classe figlie
         self.luogo_nascita = luogo_nascita 
         self.note = note
         
+        
 class Libro:
     
     def __init__ (self,ISBN = "", titolo = "", lingua = "", autore = "", editore = "", anno = "",  copie = "", categoria = ""):
@@ -47,5 +48,15 @@ class Libro:
         self.categoria = categoria
         self.copie = copie
         self.autore = autore
+        
+    def view(self):
+        print('\n\nISBN: ', self.ISBN)
+        print('Titolo: ', self.titolo)
+        print('Lingua: ', self.lingua)
+        print('Editore: ', self.editore)
+        print('Anno: ', self.anno)
+        print('Categoria: ', self.categoria)
+        print('Copie: ', self.copie)
+        print('Autore: ',self.autore)
         
      

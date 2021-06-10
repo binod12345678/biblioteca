@@ -4,8 +4,8 @@ Created on Thu Apr 29 09:16:21 2021
 
 @author: JalexFollosco
 """
-import oggetti as o
-import datetime
+#import oggetti as o
+#import datetime
 
 #CREAZIONE DB INIZIALE
 
@@ -268,26 +268,8 @@ else:
         
 #PRESTITO
 '''
-while True:
-    try:
-        libro = int(input('inserisci isbn libro'))
-        if libro in estrazione(conn, 'libro', 'isbn'):
-            break
-        else:
-            continue
-    except ValueError:
-        continue
-    
-while True:
-    try:
-        utente = int(input('inserisci il numero di tessera dell utente'))
-        if utente in estrazione(conn, 'utente', 'id_tessera'):
-            break
-        else:
-            continue
-    except ValueError:
-        continue
-import datetime   
+
+ 
 
 V2
 
@@ -299,15 +281,29 @@ while True:
             if libro.copie > 0:
                 break
             else:
-                print('questo libro non è disponibile al prestito, scegliere in altro libro')
+                print('questo libro non è disponibile al prestito, scegliere un altro libro')
                 continue
         else:
             print('questo isbn non è presente nel db o hai digitato male.')
             continue
     except ValueError:
-        print('hai inserito delle lettere')
         continue
+    
+while True:
+    try:
+        utente = int(input('inserisci il numero di tessera dell utente'))
+        if utente in estrazione(conn, 'utente', 'id_tessera'):
+            break
+    except ValueError:
+        continue
+  
 
+
+isbn_utente = tuple((utente, libro.ISBN))
+if isbn_utente in ricerca_prestito(conn, utente):
+    print('l\' utente ha già in prestito questo libro')
+else:
+    prestito(conn, libro, utente)
 
 
 
@@ -356,7 +352,15 @@ def restituzione(conn, libro, utente):
     conn.commit()
     return
 
+#RESTITUZIONE
 
+def ricerca_prestito(conn, utente):
+    query='SELECT tessera_id, isbn_libro FROM prestito WHERE data_restituzione is NULL AND tessera_id = :tessera'
+    x = sql.esegui(conn, query, {'tessera':utente})
+    return x
+
+
+'''
 while True:
     
     try:
@@ -367,13 +371,13 @@ while True:
         else:
             print('questo libro non risulta nei prestiti')
             continue
-     except ValueError:
+    except ValueError:
         continue
 
 while True:
     try:
         utente = int(input('inserisci il numero di tessera dell utente'))
-        if utente in sql.estrazione(conn, 'utente', 'id_tessera'):
+        if utente in sql.estrazione(conn, 'prestito', 'tessera_id'):
             break
         else:
             print('numero di tessera inesistente')
@@ -381,8 +385,19 @@ while True:
     except ValueError:
         continue
     
+isbn_utente = tuple((utente, libro_isbn))
+if isbn_utente in ricerca_prestito(conn, utente):
+    print('esiste la coppia')
+    restituzione(conn,libro, utente)
+else:
+    print('non esiste questa coppia')
 
+'''
 
-
+def update_libroDB(conn, libro, campo, valore):
+    query= '''UPDATE libro SET {campo} = :valore WHERE isbn = :filtro '''
+    sql.esegui(conn, query, {'valore': valore, 'filtro': libro})
+    conn.commit()
+    return
 
 
